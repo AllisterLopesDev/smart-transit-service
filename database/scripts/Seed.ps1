@@ -1,7 +1,8 @@
-# seed.ps1
+#!/usr/bin/env pwsh
 param()
 $ErrorActionPreference = "Stop"
 
+# Load env
 $envFile = "..\.env"
 if (Test-Path $envFile) {
     Get-Content $envFile | ForEach-Object {
@@ -13,20 +14,18 @@ if (Test-Path $envFile) {
 }
 
 $seedsDir = "../seeds"
-$stateFile = "../.seeds_state"
 
-if (-not (Test-Path $stateFile)) { Set-Content $stateFile "0" }
-
-$currentVersion = [int](Get-Content $stateFile)
-$seedFiles = Get-ChildItem $seedsDir | Where-Object { $_.Name -like "*_seed_*.sql" } | Sort-Object Name
-
-foreach ($file in $seedFiles) {
-    $version = [int]($file.BaseName.Split('_')[0])
-    if ($version -gt $currentVersion) {
-        Write-Host "Applying seed $($file.Name)"
-        psql $env:DATABASE_URL -f $file.FullName
-        Set-Content $stateFile $version
-    }
+if (-not (Test-Path $seedsDir)) {
+    Write-Host "Seeds directory not found: $seedsDir"
+    exit 1
 }
 
-Write-Host "All seeds applied successfully."
+# Run all seed files (idempotent)
+$seedFiles = Get-ChildItem $seedsDir -Filter "*_seed.sql" | Sort-Object Name
+
+foreach ($file in $seedFiles) {
+    Write-Host "Applying seed: $($file.Name)"
+    psql $env:DATABASE_URL -f $file.FullName
+}
+
+Write-Host "✅ All seeds applied successfully."

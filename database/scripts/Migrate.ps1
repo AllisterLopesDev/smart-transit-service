@@ -1,36 +1,23 @@
-# migrate.ps1
-param()
+#!/usr/bin/env pwsh
+Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# Load .env file
-$envFile = "..\.env"
-if (Test-Path $envFile) {
-    Get-Content $envFile | ForEach-Object {
-        if ($_ -match "DATABASE_URL=(.+)") { $env:DATABASE_URL = $matches[1] }
-    }
-} else {
-    Write-Host ".env file not found!" -ForegroundColor Red
+# Load environment variables
+. ../.env
+
+$MigrationsDir = "../migrations"
+
+if (-Not (Test-Path $MigrationsDir)) {
+    Write-Host "Migrations directory not found: $MigrationsDir"
     exit 1
 }
 
-$migrationsDir = "../migrations"
-$stateFile = "../.migrations_state"
+# Run all *.sql files in migrations dir (one per table, idempotent)
+$SqlFiles = Get-ChildItem -Path $MigrationsDir -Filter "*.sql" | Sort-Object Name
 
-# Ensure state file exists
-if (-not (Test-Path $stateFile)) { Set-Content $stateFile "0" }
-
-$currentVersion = [int](Get-Content $stateFile)
-
-# Apply migrations
-$upMigrations = Get-ChildItem $migrationsDir | Where-Object { $_.Name -like "*_up.sql" } | Sort-Object Name
-
-foreach ($file in $upMigrations) {
-    $version = [int]($file.BaseName.Split('_')[0])
-    if ($version -gt $currentVersion) {
-        Write-Host "Applying migration $($file.Name)"
-        psql $env:DATABASE_URL -f $file.FullName
-        Set-Content $stateFile $version
-    }
+foreach ($File in $SqlFiles) {
+    Write-Host "Applying migration: $($File.Name) ..."
+    psql $env:DATABASE_URL -f $File.FullName
 }
 
-Write-Host "All migrations applied successfully."
+Write-Host "✅ All migrations applied successfully."
