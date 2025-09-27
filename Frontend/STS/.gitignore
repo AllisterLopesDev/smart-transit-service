@@ -4,6 +4,7 @@
 node_modules/
 
 # Expo
+.vscode/
 .expo/
 dist/
 web-build/
@@ -32,10 +33,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-package-lock.json
-yarn.lock
-.vscode/
-
 
 # typescript
 *.tsbuildinfo
