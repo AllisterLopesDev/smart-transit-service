@@ -1,106 +1,88 @@
-# 📚 Database Setup Guide
 
-This folder contains everything needed to manage the **PostgreSQL database schema** and **seed data** for the **Smart Transport System**.  
-We use raw SQL migrations and shell scripts (no external migration tools) to keep setup **lightweight and transparent**.
+# Database Migrations Setup
 
----
+This guide explains how to set up and run database migrations for this project using Flyway.
+The `Run-Flyway.ps1` PowerShell script automates installing required tools and running migrations.
 
-## 📂 Directory Structure
 
-db/
-├── migrations/ # Schema changes (versioned, raw SQL)
-├── seeds/ # Data population scripts (reference + sample data)
-├── scripts/ # Shell scripts to manage migrations & seeds
-├── .migrations_state # Tracks last applied migration
-├── .seeds_state # Tracks last applied seed
-├── .env.example # Example DB connection config
-└── README.md # This file
+## Prerequisites
+Before running migrations, you need:
 
-yaml
-Copy code
+- **PowerShell** (Windows, Linux, or macOS PowerShell Core)
+- **Internet connection** (for installing tools)
+- Access to the target **database**
 
----
 
-## ⚙️ Configuration
+## Installing Required Tools
 
-1. Copy `.env.example` → `.env`
-2. Update the database connection string:
+The script uses Scoop to install Flyway.
+Scoop does not require administrator privileges and handles tool installation automatically.
 
-```env
-DATABASE_URL=postgresql://username:password@localhost:5432/smart_transport
-⚠️ Do not commit .env with real credentials. Always use .env.example as a template.
+The first time you run migrations, Scoop and Flyway will be installed if they are not already available.
 
-🔨 Migrations
-Migrations are used to evolve the database schema (tables, columns, constraints).
-Each migration has both an up (apply) and down (rollback) script:
+### Run-Flyway.ps1 Script
+The script performs the following:
 
-001_init_schema_up.sql → Apply schema changes
+- Checks if Scoop is installed; if not, installs Scoop.
+- Checks if Flyway is installed; if not, installs Flyway via Scoop.
+- Runs Flyway migrations using the `flyway.conf` configuration file.
+## Usage
 
-001_init_schema_down.sql → Rollback schema changes
+Open a PowerShell terminal and run:
 
-Run migrations
-bash
-Copy code
-cd db/scripts
-./migrate.sh
-Rollback last migration
-bash
-Copy code
-cd db/scripts
-./rollback.sh
-The state of applied migrations is tracked in .migrations_state.
-
-🌱 Seeds
-Seeds populate the DB with initial data (reference data, sample users, vehicles, etc.).
-All seed scripts are idempotent (can be re-run safely).
-
-Example:
-
-001_seed_users.sql → Inserts baseline users
-
-002_seed_vehicles.sql → Inserts vehicles
-
-Run seeds
-bash
-Copy code
-cd db/scripts
-./seed.sh
-The state of applied seeds is tracked in .seeds_state.
-
-🚀 Combined Setup
-Run both migrations and seeds in one go:
-
-bash
-Copy code
-cd db/scripts
-./setup.sh
-This will:
-
-Apply all pending migrations
-
-Apply all pending seeds
-
-🔄 Resetting the Database (Optional)
-If you want to start fresh (useful for development):
-
-Drop and recreate the database manually
-
-Run:
-
-bash
-Copy code
-./migrate.sh
-./seed.sh
-👉 A reset.sh script may be added later to automate this.
-
-✅ Best Practices
-Keep schema and seeds separate (migrations/ vs seeds/)
-
-Version everything with incremental numbers (001, 002, …)
-
-Never hardcode secrets in migrations or seeds
-
-Use idempotent inserts in seeds (ON CONFLICT DO NOTHING)
-
-Always test migrations locally before merging to main branch
+```powershell
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+    .\Run-Flyway.ps1
 ```
+The script will:
+
+- Install Scoop if missing
+- Install Flyway if missing
+- Run Flyway migrations automatically
+
+Example Output
+
+```plaintext
+    Scoop not found. Installing Scoop...
+    Installing Flyway with Scoop...
+    Running Flyway migrations...
+    Successfully validated 2 migrations (execution time 00:00.032s)
+    Current version of schema "public": 2
+    Schema "public" is up to date. No migration necessary.
+```
+
+
+## Configuration
+
+The script uses the flyway.conf file located in the migrations configuration directory.
+Ensure flyway.conf is configured correctly with your database connection details, including:
+
+- `flyway.url`
+- `flyway.user`
+- `flyway.password`
+- `flyway.locations`
+
+Example `flyway.conf` snippet:
+
+```flyway.conf
+    flyway.url=jdbc:postgresql://localhost:5432/my_database
+    flyway.user=my_user
+    flyway.password=my_password
+    flyway.locations=filesystem:sql
+```
+
+
+## Notes
+
+- The script uses $PSScriptRoot to determine the repository root directory dynamically.
+- Ensure your migration scripts follow Flyway’s naming convention:
+
+```bash
+  V<version>__<description>.sql
+```
+- Example: V1__create_roles_table.sql
+    
+## Support
+
+For support, email darron.dev@gmail.com
+
