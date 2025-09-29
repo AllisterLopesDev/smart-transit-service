@@ -21,11 +21,12 @@ CREATE TABLE IF NOT EXISTS roles (
     is_system_role BOOLEAN NOT NULL DEFAULT FALSE,
     status role_status NOT NULL DEFAULT 'active',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID NOT NULL,
+    created_by CHAR(36) NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by UUID,
+    updated_by CHAR(36),
     UNIQUE (name)
 );
+
 
 -- Create trigger for updating updated_at column
 DO $$
