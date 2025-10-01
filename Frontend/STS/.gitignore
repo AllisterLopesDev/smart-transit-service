@@ -4,8 +4,9 @@
 node_modules/
 
 # Expo
-.vscode/
+package-lock.json
 .expo/
+.vscode/
 dist/
 web-build/
 expo-env.d.ts
@@ -37,8 +38,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-app-example
-
 # generated native folders
 /ios
 /android
+
+
