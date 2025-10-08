@@ -31,6 +31,7 @@ DB_USER=myuser
 DB_PASS=mypassword
 JWT_SECRET=256 or 128 secret string
 JWT_EXPIRES_IN=3600s
+LOG_LEVEL=info
 
 ⚠️ Don’t forget: .env is in .gitignore so it won’t be pushed to GitHub.
 
