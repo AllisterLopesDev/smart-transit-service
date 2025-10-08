@@ -1,4 +1,5 @@
 const { generateToken } = require("../utils/jwt");
+const { success } = require("../utils/response");
 
 // dummy user validation for demo
 exports.register = (req, res) => {
@@ -6,5 +7,5 @@ exports.register = (req, res) => {
   const user = { username: req.body.username };
   const token = generateToken({ username: user.username });
 
-  res.json({ access_token: token });
+  res.json(success({ access_token: token }, "User registered successfully"));
 };
