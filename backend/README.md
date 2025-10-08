@@ -6,7 +6,7 @@ Make sure you have the following installed:
 Node.js (LTS)
 
 npm
- (comes with Node.js)
+(comes with Node.js)
 
 Git (optional, if you’re cloning this repo)
 
@@ -16,7 +16,6 @@ Clone the repository (or download as zip):
 
 git clone https://github.com/your-username/your-backend-repo.git
 cd your-backend-repo/backend
-
 
 Install dependencies:
 
@@ -30,7 +29,9 @@ PORT=5000
 DB_HOST=localhost
 DB_USER=myuser
 DB_PASS=mypassword
-
+JWT_SECRET=256 or 128 secret string
+JWT_EXPIRES_IN=3600s
+LOG_LEVEL=info
 
 ⚠️ Don’t forget: .env is in .gitignore so it won’t be pushed to GitHub.
 
@@ -43,13 +44,13 @@ npm start
 
 📂 Project Structure
 backend/
-│── server.js        # Entry point
-│── package.json     # Dependencies & scripts
-│── routes/          # Express routes
-│── controllers/     # Route handlers
-│── models/          # Database models
-│── middleware/      # Express middleware
-│── .env             # Environment variables (not committed)
+│── server.js # Entry point
+│── package.json # Dependencies & scripts
+│── routes/ # Express routes
+│── controllers/ # Route handlers
+│── models/ # Database models
+│── middleware/ # Express middleware
+│── .env # Environment variables (not committed)
 │── .gitignore
 
 🔗 Example API Endpoint
@@ -58,18 +59,24 @@ After starting the server, visit:
 
 GET http://localhost:5000/
 
-
 Response:
 
 {
-  "message": "Hello, Express Backend!"
+"success": false,
+"data": null,
+"error": {
+"code": "TOKEN_EXPIRED",
+"message": "Token has expired"
+},
+"status": 401
 }
 
 🛠️ Useful Commands
-Command	Description
-npm install	Install dependencies
-npm run dev	Run in development (nodemon)
-npm start	Run in production (node)
+Command Description
+npm install Install dependencies
+npm run dev Run in development (nodemon)
+npm start Run in production (node)
+
 📝 Notes
 
 Keep your .env file safe and never commit it to GitHub.
