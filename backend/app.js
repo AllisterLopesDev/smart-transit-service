@@ -1,17 +1,17 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const app = express();
-const PORT = process.env.PORT;
+
+// Routes
+// const indexRouter = require("./routes/index");
+const authRouter = require("./routes/auth");
 
 // Middleware to parse JSON
 app.use(express.json());
 
-//sample route
-app.get('/', (req,res) =>{
-    res.send("Hello World");
-});
+// Routes
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// app.use("/", indexRouter);
+app.use("/auth", authRouter);
+
+module.exports = app;
