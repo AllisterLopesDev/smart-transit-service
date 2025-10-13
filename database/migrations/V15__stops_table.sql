@@ -2,23 +2,13 @@
 -- Flyway migration: Create stops table
 -- ==============================================
 
--- Create ENUM type stops_type if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_type WHERE typname = 'stops_type'
-    ) THEN
-        CREATE TYPE stops_type AS ENUM ('stop', 'depot', 'terminal');
-    END IF;
-END
-$$;
 
 -- Create stops table
 CREATE TABLE IF NOT EXISTS stops (
-    id VARCHAR(36) PRIMARY KEY ,
+    id VARCHAR(36) PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
-    type stops_type NOT NULL,
+    stop_type VARCHAR(36) NOT NULL REFERENCES mst_stop_types(id), -- Using foreign key to mst_stop_types table for stop type reference 
     latitude DECIMAL(9, 6) NOT NULL,
     longitude DECIMAL(9, 6) NOT NULL,
     address VARCHAR(255),

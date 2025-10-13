@@ -19,7 +19,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_type WHERE typname = 'buses_status'
     ) THEN
-        CREATE TYPE buses_status AS ENUM ('active', 'inactive', 'under_maintenance');
+        CREATE TYPE buses_status AS ENUM ('active', 'inactive', 'under_maintenance', ' pending_approval', 'decommissioned', 'scrapped', 'sold', 'leased', 'reserved', 'in_service', 'out_of_service', 'other');
     END IF;
 END
 $$;
@@ -28,13 +28,13 @@ $$;
 CREATE TABLE IF NOT EXISTS buses (
     id VARCHAR(36) PRIMARY KEY ,
     registration_number VARCHAR(20) NOT NULL UNIQUE,
-    make VARCHAR(50),
-    model VARCHAR(50),
+    make VARCHAR(36),
+    model VARCHAR(36),
     year_of_manufacture DATE,
     capacity INT,
     type_id VARCHAR(36) REFERENCES mst_bus_types(id),
-    fuel_type buses_fuel_type NOT NULL,
-    status buses_status NOT NULL DEFAULT 'active',
+    fuel_type buses_fuel_type NOT NULL DEFAULT 'diesel',
+    status buses_status NOT NULL,
     approved_by CHAR(36),
     created_by CHAR(36) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

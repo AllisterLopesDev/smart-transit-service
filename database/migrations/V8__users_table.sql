@@ -16,10 +16,10 @@ $$;
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(36) PRIMARY KEY ,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    country_code VARCHAR(10),
-    phone_number VARCHAR(15) UNIQUE,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE,
+    country_code VARCHAR(5),
+    phone_number VARCHAR(20) UNIQUE,
     full_phone VARCHAR(20) UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     status user_status NOT NULL DEFAULT 'active',

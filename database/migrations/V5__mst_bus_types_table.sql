@@ -2,16 +2,7 @@
 -- Flyway migration: Create mst_bus_types table
 -- ==============================================
 
--- Create ENUM type if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_type WHERE typname = 'mst_bus_types_status'
-    ) THEN
-        CREATE TYPE mst_bus_types_status AS ENUM ('active', 'inactive');
-    END IF;
-END
-$$;
+
 
 -- Create mst_bus_types table
 CREATE TABLE IF NOT EXISTS mst_bus_types (

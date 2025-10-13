@@ -5,7 +5,7 @@
 
 -- Create routes table
 CREATE TABLE IF NOT EXISTS routes (
-    id VARCHAR(36) PRIMARY KEY ,
+    id CHAR(36) PRIMARY KEY ,
     route_code VARCHAR(20) NOT NULL UNIQUE,
     origin VARCHAR(100) NOT NULL,
     destination VARCHAR(100) NOT NULL,
@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS routes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
     deleted_at TIMESTAMP
+    -- FOREIGN KEY (origin) REFERENCES stops(id),
+    -- FOREIGN KEY (destination) REFERENCES stops(id)
 ); 
 
 

@@ -2,16 +2,6 @@
 -- Flyway migration: Create mst_stop_types table
 -- ==============================================
 
--- Create ENUM type if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_type WHERE typname = 'mst_stop_types_status'
-    ) THEN
-        CREATE TYPE mst_stop_types_status AS ENUM ('active', 'inactive');
-    END IF;
-END
-$$;
 
 -- Create mst_stop_types table
 CREATE TABLE IF NOT EXISTS mst_stop_types (

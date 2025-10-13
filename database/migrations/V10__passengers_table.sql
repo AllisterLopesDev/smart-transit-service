@@ -6,9 +6,9 @@
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM pg_type WHERE typname = 'passenger_status'
+        SELECT 1 FROM pg_type WHERE typname = 'passenger_travel_frequency_status'
     ) THEN
-        CREATE TYPE passenger_status AS ENUM ('daily', 'weekly', 'monthly', 'occasionally');
+        CREATE TYPE passenger_travel_frequency_status AS ENUM ('daily', 'weekly', 'monthly', 'occasionally');
     END IF;
 END
 $$;
@@ -20,10 +20,13 @@ CREATE TABLE IF NOT EXISTS passengers (
     loyalty_points INT DEFAULT 0,
     preferred_payment_method VARCHAR(50),
     preferred_bus_type VARCHAR(50),
-    travel_frequency passenger_status NOT NULL DEFAULT 'occasionally',
+    travel_frequency passenger_travel_frequency_status NOT NULL DEFAULT 'occasionally',
     emergency_contact_name VARCHAR(100),
     emergency_contact_phone VARCHAR(15),
-    special_needs TEXT
+    special_needs TEXT,
+    FOREIGN KEY (id) REFERENCES users(id),
+    FOREIGN KEY (preferred_payment_method) REFERENCES mst_payment_methods(id),
+    FOREIGN KEY (preferred_bus_type) REFERENCES mst_bus_types(id)
 );
 
 

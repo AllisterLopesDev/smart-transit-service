@@ -8,7 +8,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_type WHERE typname = 'driver_status'
     ) THEN
-        CREATE TYPE driver_status AS ENUM ('active', 'inactive', 'suspended');
+        CREATE TYPE driver_status AS ENUM ('active', 'inactive', 'suspended', 'on_leave', 'retired', 'terminated', 'training', 'probation', 'pending', 'other');
     END IF;
 END
 $$;
@@ -20,7 +20,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_type WHERE typname = 'license_category_status'
     ) THEN
-        CREATE TYPE license_category_status AS ENUM ('LMV', 'HMV', 'PSV');
+        CREATE TYPE license_category_status AS ENUM ('LMV', 'HMV', 'PSV', 'LMV-TR', 'HMV-TR', 'Commercial');
     END IF;
 END
 $$;
@@ -29,13 +29,13 @@ $$;
 CREATE TABLE IF NOT EXISTS drivers (
     id VARCHAR(36),
     license_number VARCHAR(50) NOT NULL UNIQUE,
-    license_category license_category_status NOT NULL,
+    license_category license_category_status NOT NULL DEFAULT 'LMV',
     license_expiry_date DATE,
     years_of_experience INT,
     shift_start_time TIME,
     shift_end_time TIME,
     rating DECIMAL(2, 1) CHECK (rating >= 0 AND rating <= 5),
-    status driver_status NOT NULL DEFAULT 'active',
+    status driver_status NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
