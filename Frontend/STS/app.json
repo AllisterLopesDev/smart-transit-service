@@ -1,11 +1,12 @@
 {
   "expo": {
+    "scheme": "stsApp",
     "name": "STS",
     "slug": "STS",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic", // light | dark | automatic
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -24,6 +25,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
