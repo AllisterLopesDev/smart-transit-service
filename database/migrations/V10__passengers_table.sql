@@ -16,10 +16,10 @@ $$;
 
 -- Create passengers table
 CREATE TABLE IF NOT EXISTS passengers (
-    id VARCHAR(36) PRIMARY KEY,
+    id UUID PRIMARY KEY,
     loyalty_points INT DEFAULT 0,
-    preferred_payment_method VARCHAR(50),
-    preferred_bus_type VARCHAR(50),
+    preferred_payment_method UUID,
+    preferred_bus_type UUID,
     travel_frequency passenger_travel_frequency_status NOT NULL DEFAULT 'occasionally',
     emergency_contact_name VARCHAR(100),
     emergency_contact_phone VARCHAR(15),

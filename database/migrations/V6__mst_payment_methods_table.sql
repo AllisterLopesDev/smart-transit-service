@@ -6,9 +6,9 @@
 
 -- Create mst_payment_methods table
 CREATE TABLE IF NOT EXISTS mst_payment_methods (
-    id VARCHAR(36) PRIMARY KEY,
+    id UUID PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    code VARCHAR(20) NOT NULL UNIQUE,
+    code VARCHAR(20) NOT NULL,
     description VARCHAR(255),
     provider VARCHAR(100),
     supports_refunds BOOLEAN NOT NULL DEFAULT FALSE,
@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS mst_payment_methods (
     updated_by CHAR(36),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
-    deleted_at TIMESTAMP
+    deleted_at TIMESTAMP,
+    UNIQUE (code)
 );
 
 

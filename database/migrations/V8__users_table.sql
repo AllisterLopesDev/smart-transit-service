@@ -15,12 +15,12 @@ $$;
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
-    id VARCHAR(36) PRIMARY KEY ,
+    id UUID PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    email VARCHAR(120) NOT NULL UNIQUE,
+    email VARCHAR(120) NOT NULL,
     country_code VARCHAR(5),
-    phone_number VARCHAR(20) UNIQUE,
-    full_phone VARCHAR(20) UNIQUE,
+    phone_number VARCHAR(20),
+    full_phone VARCHAR(20),
     password_hash VARCHAR(255) NOT NULL,
     status user_status NOT NULL DEFAULT 'active',
     profile_picture_url VARCHAR(255),
@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS users (
     updated_by CHAR(36),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
-    deleted_at TIMESTAMP
+    deleted_at TIMESTAMP,
+    UNIQUE (email, phone_number, full_phone)
 );
 
 

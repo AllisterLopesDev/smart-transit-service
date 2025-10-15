@@ -6,9 +6,9 @@
 
 -- Create mst_bus_types table
 CREATE TABLE IF NOT EXISTS mst_bus_types (
-    id VARCHAR(36) PRIMARY KEY,
+    id UUID PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    code VARCHAR(20) NOT NULL UNIQUE,
+    code VARCHAR(20) NOT NULL,
     description VARCHAR(255),
     has_ac BOOLEAN NOT NULL DEFAULT FALSE,
     has_sleeper_berths BOOLEAN NOT NULL DEFAULT FALSE,
@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS mst_bus_types (
     updated_by CHAR(36),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
-    deleted_at TIMESTAMP
+    deleted_at TIMESTAMP,
+    UNIQUE (code)
 );
 
 

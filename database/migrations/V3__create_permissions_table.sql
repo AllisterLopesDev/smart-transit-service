@@ -13,9 +13,6 @@ BEGIN
 END
 $$;
 
--- Enable pgcrypto extension for gen_random_uuid()
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 -- Create permissions table
 CREATE TABLE IF NOT EXISTS permissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -23,7 +20,8 @@ CREATE TABLE IF NOT EXISTS permissions (
     description VARCHAR(255),
     status permission_status NOT NULL DEFAULT 'active',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (name)
 );
 
 

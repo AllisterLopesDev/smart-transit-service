@@ -15,11 +15,11 @@ $$;
 
 -- Create trips table
 CREATE TABLE IF NOT EXISTS trips (
-    id VARCHAR(36) PRIMARY KEY,
-    bus_id VARCHAR(36) NOT NULL,
-    route_id VARCHAR(36) NOT NULL,
-    driver_id VARCHAR(36) NOT NULL,
-    conductor_id VARCHAR(36),
+    id UUID PRIMARY KEY,
+    bus_id UUID NOT NULL,
+    route_id UUID NOT NULL,
+    driver_id UUID NOT NULL,
+    conductor_id UUID,
     scheduled_departure_time TIMESTAMP NOT NULL,
     scheduled_arrival_time TIMESTAMP NOT NULL,
     actual_departure_time TIMESTAMP,

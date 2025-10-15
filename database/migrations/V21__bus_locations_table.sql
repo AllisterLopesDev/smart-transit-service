@@ -4,9 +4,9 @@
 
 -- Create bus_locations table
 CREATE TABLE IF NOT EXISTS bus_locations (
-    id VARCHAR(36) PRIMARY KEY,
-    bus_id VARCHAR(36) NOT NULL,
-    trip_id VARCHAR(36) NOT NULL,
+    id UUID PRIMARY KEY,
+    bus_id UUID NOT NULL,
+    trip_id UUID NOT NULL,
     latitude DECIMAL(9,6) NOT NULL,
     longitude DECIMAL(9,6) NOT NULL,
     speed_kmph DECIMAL(5,2),

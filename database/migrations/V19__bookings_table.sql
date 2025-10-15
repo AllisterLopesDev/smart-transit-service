@@ -37,10 +37,10 @@ $$;
 
 -- Create bookings table
 CREATE TABLE IF NOT EXISTS bookings (
-    id VARCHAR(36) PRIMARY KEY,
-    pnr_number VARCHAR(20) UNIQUE NOT NULL,
-    passenger_id VARCHAR(36) NOT NULL,
-    trip_id VARCHAR(36) NOT NULL,
+    id UUID PRIMARY KEY,
+    pnr_number VARCHAR(20) NOT NULL,
+    passenger_id UUID NOT NULL,
+    trip_id UUID NOT NULL,
     seat_number VARCHAR(10) NOT NULL,
     fare DECIMAL(10, 2) NOT NULL,
     booking_channel booking_channel_status NOT NULL,
@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
     deleted_at TIMESTAMP,
+    UNIQUE (pnr_number),
     FOREIGN KEY (id) REFERENCES routes(id),
     FOREIGN KEY (passenger_id) REFERENCES users(id),
     FOREIGN KEY (trip_id) REFERENCES trips(id)

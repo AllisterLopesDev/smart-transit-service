@@ -5,10 +5,10 @@
 
 -- Create stops table
 CREATE TABLE IF NOT EXISTS stops (
-    id VARCHAR(36) PRIMARY KEY,
-    code VARCHAR(20) NOT NULL UNIQUE,
+    id UUID PRIMARY KEY,
+    code VARCHAR(20) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    stop_type VARCHAR(36) NOT NULL REFERENCES mst_stop_types(id), -- Using foreign key to mst_stop_types table for stop type reference 
+    stop_type UUID NOT NULL REFERENCES mst_stop_types(id), -- Using foreign key to mst_stop_types table for stop type reference 
     latitude DECIMAL(9, 6) NOT NULL,
     longitude DECIMAL(9, 6) NOT NULL,
     address VARCHAR(255),
@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS stops (
     updated_by CHAR(36),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
-    deleted_at TIMESTAMP
+    deleted_at TIMESTAMP,
+    UNIQUE (code)
 ); 
 
 

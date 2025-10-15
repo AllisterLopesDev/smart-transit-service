@@ -15,11 +15,11 @@ $$;
 
 -- Create payments table
 CREATE TABLE IF NOT EXISTS payments (
-    id VARCHAR(36) PRIMARY KEY,
-    booking_id VARCHAR(36) NOT NULL UNIQUE,
+    id UUID PRIMARY KEY,
+    booking_id UUID NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     currency_code VARCHAR(3) NOT NULL,
-    payment_method VARCHAR(50) NOT NULL,
+    payment_method UUID NOT NULL,
     transaction_id VARCHAR(100),
     payment_gateway VARCHAR(100),
     status payment_status NOT NULL DEFAULT 'pending',
@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS payments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
     deleted_at TIMESTAMP,
+    UNIQUE (booking_id),
     FOREIGN KEY (id) REFERENCES routes(id) ON DELETE CASCADE,
     FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (payment_method) REFERENCES mst_payment_methods(id)

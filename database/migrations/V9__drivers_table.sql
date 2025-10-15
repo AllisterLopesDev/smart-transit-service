@@ -27,8 +27,8 @@ $$;
 
 -- Create drivers table
 CREATE TABLE IF NOT EXISTS drivers (
-    id VARCHAR(36),
-    license_number VARCHAR(50) NOT NULL UNIQUE,
+    id UUID PRIMARY KEY,
+    license_number VARCHAR(50) NOT NULL,
     license_category license_category_status NOT NULL DEFAULT 'LMV',
     license_expiry_date DATE,
     years_of_experience INT,
@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS drivers (
     shift_end_time TIME,
     rating DECIMAL(2, 1) CHECK (rating >= 0 AND rating <= 5),
     status driver_status NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (license_number)
 );
 
 

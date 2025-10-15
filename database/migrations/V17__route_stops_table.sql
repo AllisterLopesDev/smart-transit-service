@@ -4,8 +4,8 @@
 
 -- Create route_stops table
 CREATE TABLE IF NOT EXISTS route_stops (
-    route_id VARCHAR(36) ,
-    stop_id VARCHAR(36),
+    route_id UUID,
+    stop_id UUID,
     sequence_no INT NOT NULL,
     distance_from_start_km DECIMAL(5, 2),
     scheduled_arrival_time TIME,
