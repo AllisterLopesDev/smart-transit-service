@@ -6,7 +6,7 @@
 
 -- Create mst_bus_types table
 CREATE TABLE IF NOT EXISTS mst_bus_types (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) NOT NULL,
     code VARCHAR(20) NOT NULL,
     description VARCHAR(255),

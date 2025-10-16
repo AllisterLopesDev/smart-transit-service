@@ -5,7 +5,7 @@
 
 -- Create fare_policies table
 CREATE TABLE IF NOT EXISTS fare_policies (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     route_id UUID NOT NULL,
     bus_type_id UUID NOT NULL,
     base_fare DECIMAL(8, 2) NOT NULL,
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS fare_policies (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
     deleted_at TIMESTAMP
+
     -- FOREIGN KEY (route_id) REFERENCES routes(id),
     -- FOREIGN KEY (bus_type_id) REFERENCES mst_bus_types(id)
 );

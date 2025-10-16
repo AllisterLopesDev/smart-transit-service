@@ -26,13 +26,13 @@ $$;
 
 -- Create buses table
 CREATE TABLE IF NOT EXISTS buses (
-    id UUID PRIMARY KEY ,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     registration_number VARCHAR(20) NOT NULL,
     make VARCHAR(36),
     model VARCHAR(36),
     year_of_manufacture DATE,
     capacity INT,
-    type_id UUID REFERENCES mst_bus_types(id),
+    type_id UUID,
     fuel_type buses_fuel_type NOT NULL DEFAULT 'diesel',
     status buses_status NOT NULL,
     approved_by CHAR(36),
@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS buses (
     is_insured BOOLEAN NOT NULL DEFAULT FALSE,
     depot VARCHAR(100),
     comments TEXT,
-    UNIQUE (registration_number)
+    UNIQUE (registration_number),
+    FOREIGN KEY (type_id) REFERENCES mst_bus_types(id)
 );
 
 

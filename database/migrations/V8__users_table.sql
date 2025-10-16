@@ -15,7 +15,7 @@ $$;
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) NOT NULL,
     email VARCHAR(120) NOT NULL,
     country_code VARCHAR(5),
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_by CHAR(36),
     deleted_at TIMESTAMP,
-    UNIQUE (email, phone_number, full_phone)
+    UNIQUE (email, phone_number)
 );
 
 

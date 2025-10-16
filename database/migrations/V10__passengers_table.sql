@@ -28,18 +28,3 @@ CREATE TABLE IF NOT EXISTS passengers (
     FOREIGN KEY (preferred_payment_method) REFERENCES mst_payment_methods(id),
     FOREIGN KEY (preferred_bus_type) REFERENCES mst_bus_types(id)
 );
-
-
--- Create trigger for updating updated_at column
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_trigger WHERE tgname = 'update_passengers_updated_at'
-    ) THEN
-        CREATE TRIGGER update_passengers_updated_at
-        BEFORE UPDATE ON passengers
-        FOR EACH ROW
-        EXECUTE FUNCTION update_updated_at_column();
-    END IF;
-END
-$$;

@@ -15,7 +15,7 @@ $$;
 
 -- Create trips table
 CREATE TABLE IF NOT EXISTS trips (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     bus_id UUID NOT NULL,
     route_id UUID NOT NULL,
     driver_id UUID NOT NULL,

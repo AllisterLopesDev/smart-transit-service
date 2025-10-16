@@ -5,7 +5,7 @@
 
 -- Create mst_stop_types table
 CREATE TABLE IF NOT EXISTS mst_stop_types (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     type_name VARCHAR(50) NOT NULL,
     created_by CHAR(36) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

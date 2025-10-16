@@ -14,18 +14,3 @@ CREATE TABLE IF NOT EXISTS role_permissions (
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
 );
-
-
--- Create trigger for updating updated_at column
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_trigger WHERE tgname = 'update_role_permissions_updated_at'
-    ) THEN
-        CREATE TRIGGER update_role_permissions_updated_at
-        BEFORE UPDATE ON role_permissions
-        FOR EACH ROW
-        EXECUTE FUNCTION update_updated_at_column();
-    END IF;
-END
-$$;

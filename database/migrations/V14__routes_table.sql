@@ -5,7 +5,7 @@
 
 -- Create routes table
 CREATE TABLE IF NOT EXISTS routes (
-    id UUID PRIMARY KEY ,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     route_code VARCHAR(20) NOT NULL,
     origin VARCHAR(100) NOT NULL,
     destination VARCHAR(100) NOT NULL,
@@ -19,8 +19,10 @@ CREATE TABLE IF NOT EXISTS routes (
     deleted_by CHAR(36),
     deleted_at TIMESTAMP,
     UNIQUE (route_code)
+
     -- FOREIGN KEY (origin) REFERENCES stops(id),
     -- FOREIGN KEY (destination) REFERENCES stops(id)
+    
 ); 
 
 
