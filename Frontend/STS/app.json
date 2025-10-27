@@ -1,12 +1,12 @@
 {
   "expo": {
-    "scheme": "stsApp",
+    "scheme": "STS",
     "name": "STS",
-    "slug": "STS",
+    "slug": "smart-transit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic", // light | dark | automatic
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -28,6 +28,13 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "442fae97-736f-4ff5-998e-2838b0456c0e"
+      }
+    },
+    "owner": "smarttransit.team"
   }
 }
