@@ -3,15 +3,16 @@ const express = require("express");
 const app = express();
 
 // Routes
-// const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
+const v1Router = require("./routes/v1");
 
 // Middleware to parse JSON
 app.use(express.json());
 
-// Routes
-
-// app.use("/", indexRouter);
+// Public routes
 app.use("/auth", authRouter);
+
+// Protected routes
+app.use("/v1", v1Router);
 
 module.exports = app;
