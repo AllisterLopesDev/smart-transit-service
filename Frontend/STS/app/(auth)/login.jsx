@@ -8,7 +8,7 @@ import ThemedTextInput from '../../components/ThemedTextInput'
 import ThemedButton from '../../components/ThemedButton'
 import { useState } from 'react'
 import { Pressable, Text } from 'react-native'
-// import GoogleAuth from '../../auth/GoogleAuth';
+import useGoogleAuth from '../../auth/GoogleAuth';
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -18,8 +18,10 @@ const Login = () => {
   const handleSubmit = async () => {
     console.log("Login submitted", { email, password });
   }
+  console.log(useGoogleAuth);
+  
 
-  // const { user, loading, error, signIn, signOut } = GoogleAuth();
+  // const { user, loading, error, signIn, signOut } = useGoogleAuth();
 
   return (
     <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
@@ -64,3 +66,39 @@ const Login = () => {
 }
 
 export default Login
+
+// import React from 'react';
+// import { View, Text, Button, ActivityIndicator, Image } from 'react-native';
+// // import useGoogleAuth from '../../auth/GoogleAuth'; // adjust the path
+
+// const LoginScreen = () => {
+//   // const { user, loading, error, signIn, signOut } = useGoogleAuth();
+
+//   return (
+//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//       {/* {loading && <ActivityIndicator size="large" />} */}
+      
+//       {!user ? (
+//         <>
+//           <Text style={{ fontSize: 20, marginBottom: 20 }}>Welcome! Please sign in</Text>
+//           <Button title="Sign in with Google" onPress={signIn} />
+//         </>
+//       ) : (
+//         <>
+//           <Image
+//             source={{ uri: user.user.photo }}
+//             style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 10 }}
+//           />
+//           <Text style={{ fontSize: 18, marginBottom: 5 }}>{user.user.name}</Text>
+//           <Text style={{ marginBottom: 20 }}>{user.user.email}</Text>
+//           <Button title="Sign out" onPress={signOut} />
+//         </>
+//       )}
+
+//       {error && <Text style={{ color: 'red', marginTop: 10 }}>{error}</Text>}
+//     </View>
+//   );
+// };
+
+// export default LoginScreen;
+

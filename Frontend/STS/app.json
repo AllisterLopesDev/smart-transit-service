@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.smarttransit.team.smarttransit"
     },
     "web": {
       "favicon": "./assets/favicon.png"

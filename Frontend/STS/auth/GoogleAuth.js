@@ -1,17 +1,16 @@
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { useEffect, useState } from 'react';
 
-// Configure Google Sign-In
-GoogleSignin.configure({
-  webClientId: '299414539953-bvnqviuhikfsojv3ns5glopqnhgvpd8m.apps.googleusercontent.com', 
-});
-
-const GoogleAuth = () => {
+const useGoogleAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '299414539953-bvnqviuhikfsojv3ns5glopqnhgvpd8m.apps.googleusercontent.com',
+      offlineAccess: true,
+    });
     checkCurrentUser();
   }, []);
 
@@ -19,19 +18,23 @@ const GoogleAuth = () => {
     try {
       const isSignedIn = await GoogleSignin.isSignedIn();
       if (isSignedIn) {
-        getCurrentUser();
+        await getCurrentUser();
       }
-    } catch (error) {
-      console.error('Check user error:', error);
+    } catch (err) {
+      console.error('Check user error:', err);
     }
   };
 
   const getCurrentUser = async () => {
     try {
-      const currentUser = await GoogleSignin.getCurrentUser();
+      const currentUser = await GoogleSignin.signInSilently();
       setUser(currentUser);
     } catch (error) {
-      console.error('Get current user error:', error);
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        setUser(null);
+      } else {
+        console.error('Silent sign-in error:', error);
+      }
     }
   };
 
@@ -39,15 +42,11 @@ const GoogleAuth = () => {
     try {
       setLoading(true);
       setError(null);
-      
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       setUser(userInfo);
-      
-      // Get user's ID token
-      const { accessToken, idToken } = await GoogleSignin.getTokens();
-      // Send these tokens to your backend for verification
-      
+      const tokens = await GoogleSignin.getTokens();
+      console.log('Tokens:', tokens);
     } catch (error) {
       setError(error.message);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -74,13 +73,7 @@ const GoogleAuth = () => {
     }
   };
 
-  return {
-    user,
-    loading,
-    error,
-    signIn,
-    signOut,
-  };
+  return { user, loading, error, signIn, signOut };
 };
 
-export default GoogleAuth;
+export default useGoogleAuth;
