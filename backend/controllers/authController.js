@@ -3,7 +3,8 @@ const { success } = require("../utils/response");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
-const pool = require("../dbconfig/db");
+const pool = require("../db/index");
+const { findUserByEmailOrPhone } = require("../service/userService");
 
 // Register Controller
 exports.register = async (req, res) => {
@@ -26,17 +27,12 @@ exports.register = async (req, res) => {
       full_phone,
       password,
       date_of_birth,
-      gender,
-      created_by,
+      gender
     } = req.body;
 
     // Check if user already exists
-    const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = $1 OR full_phone = $2",
-      [email, full_phone]
-    );
-
-    if (existingUser.rows.length > 0) {
+    const existingUser = await findUserByEmailOrPhone(email, full_phone);
+    if (existingUser) {
       return res
         .status(400)
         .json({ status: "error", message: "User already exists" });
@@ -55,15 +51,14 @@ exports.register = async (req, res) => {
       full_phone,
       password_hash: hashedPassword,
       date_of_birth,
-      gender,
-      created_by,
+      gender
     };
 
     await pool.query(
       `INSERT INTO users 
-        (id, name, email, country_code, phone_number, full_phone, password_hash, date_of_birth, gender, created_by, created_at, status, is_verified)
+        (id, name, email, country_code, phone_number, full_phone, password_hash, date_of_birth, gender, created_at, status, is_verified)
       VALUES 
-        ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, NOW(), 'active', false)`,
+        ($1,$2,$3,$4,$5,$6,$7,$8,$9, NOW(), 'active', false)`,
       [
         newUser.id,
         newUser.name,
@@ -73,17 +68,10 @@ exports.register = async (req, res) => {
         newUser.full_phone,
         newUser.password_hash,
         newUser.date_of_birth,
-        newUser.gender,
-        newUser.created_by,
+        newUser.gender
       ]
     );
-
-    // Generate token
-    const token = generateToken({
-      id: newUser.id,
-      email: newUser.email,
-    });
-
+    
     // Return success response
     return res
       .status(201)
@@ -96,8 +84,4 @@ exports.register = async (req, res) => {
       error: err.message,
     });
   }
-
-  // const token = generateToken(user);
-
-  // res.json(success({ access_token: token }, "User registered successfully"));
 };
