@@ -2,7 +2,7 @@ const {generateToken} = require("../utils/jwt");
 const { success } = require("../utils/response");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
-const pool = require("../dbconfig/db");
+const pool = require("../db/index");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 
