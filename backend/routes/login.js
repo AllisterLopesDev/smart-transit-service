@@ -1,13 +1,8 @@
 const express = require("express");
-const { login } = require("../controllers/loginController");
+const { login } = require("../controllers/authController");
 const { body } = require("express-validator");
 const router = express.Router();
-
-// validation rules
-const loginValidationRules = [
-  body("email").isEmail().withMessage("Valid email is required"),
-  body("password").notEmpty().withMessage("Password is required"),
-];
+const { loginValidationRules } = require("../validation/authValidation");
 
 // Login route
 router.post("/login", loginValidationRules, login);

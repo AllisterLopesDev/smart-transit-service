@@ -1,6 +1,6 @@
 const {body} = require("express-validator");
 
-//validation rules
+//register validation rules
 exports.registrationValidationRules = [
   body("name").trim().notEmpty().withMessage("Name is required"),
   body("email").isEmail().withMessage("Valid email is required"),
@@ -12,3 +12,11 @@ exports.registrationValidationRules = [
   body("gender").isIn(["male", "female", "other"]).withMessage("Gender must be male, female, or other"),
 ];
 
+// login validation rules
+const loginValidationRules = [
+  body("email").isEmail().withMessage("Valid email is required"),
+  body("password").notEmpty().withMessage("Password is required"),
+];
+
+
+exports.loginValidationRules = loginValidationRules;
