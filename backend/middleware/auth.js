@@ -25,7 +25,7 @@ function authMiddleware(req, res, next) {
     const payload = verifyToken(token);
     req.user = payload;
     logger.info(
-      `[AUTH] token is valid, user authenticated:", ${JSON.stringify(payload)}`
+      `[AUTH] token is valid, user authenticated: ${req.user.username}`
     );
     next();
   } catch (error) {
