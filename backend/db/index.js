@@ -1,9 +1,12 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Pool will read from environment variables (DATABASE_URL or PGHOST/PGUSER etc.)
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || undefined,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 async function query(text, params) {
