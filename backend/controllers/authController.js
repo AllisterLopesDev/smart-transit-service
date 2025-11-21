@@ -44,7 +44,6 @@ exports.register = async (req, res) => {
 
     // Create new user record
     const newUser = {
-      id: uuidv4(),
       name,
       email,
       country_code,
@@ -57,11 +56,10 @@ exports.register = async (req, res) => {
 
     await pool.query(
       `INSERT INTO users 
-        (id, name, email, country_code, phone_number, full_phone, password_hash, date_of_birth, gender, created_at, status, is_verified)
+        ( name, email, country_code, phone_number, full_phone, password_hash, date_of_birth, gender, status, is_verified)
       VALUES 
-        ($1,$2,$3,$4,$5,$6,$7,$8,$9, NOW(), 'active', false)`,
+        ($1,$2,$3,$4,$5,$6,$7,$8,'active', false)`,
       [
-        newUser.id,
         newUser.name,
         newUser.email,
         newUser.country_code,
