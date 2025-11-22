@@ -9,7 +9,7 @@ const v1Router = require("./routes/v1");
 // Middleware to parse JSON
 app.use(express.json());
 
-// Public routes
+// Auth route
 app.use("/auth", authRouter);
 
 // Protected routes
