@@ -1,11 +1,6 @@
 const { success, failure } = require("../../utils/response");
 const routesService = require("../../services/routesService");
 const logger = require("../../utils/logger");
-const { log } = require("winston");
-
-const routeCodeRegex = /^[0-9]{3}[A-Z]$/;
-const uuidV4Regex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 exports.getAllRoutes = async (req, res) => {
   try {
@@ -41,15 +36,8 @@ exports.getRouteById = async (req, res) => {
 
 exports.createRoute = async (req, res) => {
   const payload = req.body || {};
-  const { route_code, origin, destination, distance } = payload;
+  const { route_code, origin, destination, distance_km } = payload;
   const createdBy = req.user && req.user.id;
-
-  if (!createdBy) {
-    logger.warn("[ROUTES CONTROLLER] missing user id");
-    return res
-      .status(401)
-      .json(failure("missing_user_id", "Authenticated user ID missing", 401));
-  }
 
   try {
     const created = await routesService.createRoute(payload, createdBy);
