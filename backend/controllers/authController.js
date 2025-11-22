@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const pool = require("../db/index");
 const { findUserByEmailOrPhone } = require("../service/userService");
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
 
 // Register Controller
 exports.register = async (req, res) => {
@@ -70,7 +71,7 @@ exports.register = async (req, res) => {
         newUser.gender
       ]
     );
-    
+
     // Return success response
     return res
       .status(201)
@@ -85,13 +86,13 @@ exports.register = async (req, res) => {
   }
 };
 
-
 // Login Controller
 exports.login = async (req, res) => {
   try {
     // Validate input fields
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.warn("[LOGIN] Validation failed");
       return res.status(400).json({
         status: "error",
         message: "Validation failed",
@@ -100,40 +101,48 @@ exports.login = async (req, res) => {
     }
     const { email, password } = req.body;
     // Check if user exists
-    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    const userResult = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
     if (userResult.rows.length === 0) {
-      return res.status(400).json({ status: "error", message: "Invalid credentials" });
+      logger.warn("[LOGIN] Invalid credentials for email: " + email);
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid credentials" });
     }
     const user = userResult.rows[0];
 
-    // Compare passwords
+    logger.info("[LOGIN] Authenticating user");
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
-      return res.status(400).json({ status: "error", message: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid credentials" });
     }
 
     // Generate token
+    logger.info("[LOGIN] Authentication success, generating access token");
     const token = generateToken({
-        id: user.id,
-        email: user.email,
+      sub: user.id,
+      email: user.email,
     });
 
     // Return success response
+    logger.info("[LOGIN] Login request successful for user " + user.id);
     return res
       .status(200)
       .json(success({ access_token: token }, "User logged in successfully"));
-  }
-    catch (error) {
-    console.error("Login Error:", error);
+  } catch (error) {
+    logger.error("[LOGIN] Login Error:", error);
     return res.status(500).json({
       status: "error",
       message: "Server error during login",
     });
   }
 
-  //login timestamp update 
-  await pool.query(
-    "UPDATE users SET last_login = NOW() WHERE id = $1",
-    [user.id]
-  );
+  //login timestamp update
+  await pool.query("UPDATE users SET last_login = NOW() WHERE id = $1", [
+    user.id,
+  ]);
 };

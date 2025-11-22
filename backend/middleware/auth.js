@@ -24,9 +24,7 @@ function authMiddleware(req, res, next) {
   try {
     const payload = verifyToken(token);
     req.user = payload;
-    logger.info(
-      `[AUTH] token is valid, user authenticated: ${req.user.username}`
-    );
+    logger.info(`[AUTH] token is valid, user ${req.user.sub} authenticated`);
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
