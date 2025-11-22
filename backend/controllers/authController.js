@@ -5,6 +5,7 @@ const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 const pool = require("../db/index");
 const { findUserByEmailOrPhone } = require("../service/userService");
+const jwt = require("jsonwebtoken");
 
 // Register Controller
 exports.register = async (req, res) => {
@@ -43,7 +44,6 @@ exports.register = async (req, res) => {
 
     // Create new user record
     const newUser = {
-      id: uuidv4(),
       name,
       email,
       country_code,
@@ -56,11 +56,10 @@ exports.register = async (req, res) => {
 
     await pool.query(
       `INSERT INTO users 
-        (id, name, email, country_code, phone_number, full_phone, password_hash, date_of_birth, gender, created_at, status, is_verified)
+        ( name, email, country_code, phone_number, full_phone, password_hash, date_of_birth, gender, status, is_verified)
       VALUES 
-        ($1,$2,$3,$4,$5,$6,$7,$8,$9, NOW(), 'active', false)`,
+        ($1,$2,$3,$4,$5,$6,$7,$8,'active', false)`,
       [
-        newUser.id,
         newUser.name,
         newUser.email,
         newUser.country_code,
@@ -84,4 +83,57 @@ exports.register = async (req, res) => {
       error: err.message,
     });
   }
+};
+
+
+// Login Controller
+exports.login = async (req, res) => {
+  try {
+    // Validate input fields
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        status: "error",
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+    const { email, password } = req.body;
+    // Check if user exists
+    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ status: "error", message: "Invalid credentials" });
+    }
+    const user = userResult.rows[0];
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      return res.status(400).json({ status: "error", message: "Invalid credentials" });
+    }
+
+    // Generate token
+    const token = generateToken({
+        id: user.id,
+        email: user.email,
+    });
+
+    // Return success response
+    return res
+      .status(200)
+      .json(success({ access_token: token }, "User logged in successfully"));
+  }
+    catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Server error during login",
+    });
+  }
+
+  //login timestamp update 
+  await pool.query(
+    "UPDATE users SET last_login = NOW() WHERE id = $1",
+    [user.id]
+  );
 };
