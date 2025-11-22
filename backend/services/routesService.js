@@ -8,9 +8,6 @@ const BASE_COLUMNS = [
   "distance_km",
   "estimated_duration_minutes",
   "is_active",
-  "created_by",
-  "created_at",
-  "updated_at",
 ].join(", ");
 
 async function getAllRoutes() {
@@ -25,7 +22,7 @@ async function getRouteById(id) {
   return res.rows[0] || null;
 }
 
-async function createRoute(payload) {
+async function createRoute(payload, created_by) {
   // Accept only expected fields to avoid SQL injection via column names
   const {
     route_code,
@@ -34,7 +31,6 @@ async function createRoute(payload) {
     distance_km = null,
     estimated_duration_minutes = null,
     is_active = true,
-    created_by,
   } = payload;
 
   const sql = `
@@ -56,4 +52,15 @@ async function createRoute(payload) {
   return res.rows[0];
 }
 
-module.exports = { getAllRoutes, getRouteById, createRoute };
+async function getRouteByRouteCode(route_code) {
+  const sql = `SELECT ${BASE_COLUMNS} FROM routes WHERE route_code = $1 AND deleted_at IS NULL`;
+  const res = await db.query(sql, [route_code]);
+  return res.rows[0] || null;
+}
+
+module.exports = {
+  getAllRoutes,
+  getRouteById,
+  createRoute,
+  getRouteByRouteCode,
+};

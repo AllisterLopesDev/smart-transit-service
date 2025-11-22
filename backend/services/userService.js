@@ -10,4 +10,10 @@ async function getById(id) {
   return res.rows[0] || null;
 }
 
-module.exports = { getById };
+async function findUserByEmailOrPhone(email, full_phone) {
+  const sql = `SELECT ${BASE_COLUMNS} FROM users WHERE email = $1 OR full_phone = $2 AND deleted_at IS NULL`;
+  const existingUser = await db.query(sql, [email, full_phone]);
+  return existingUser.rows[0] || null;
+}
+
+module.exports = { getById, findUserByEmailOrPhone };

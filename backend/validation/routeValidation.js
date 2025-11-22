@@ -1,5 +1,6 @@
-const { body } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 const { ROUTE_CODE_REGEX } = require("../constants/regex");
+const { failure } = require("../utils/response");
 
 const validateCreateRoute = [
   body("route_code")
@@ -8,7 +9,7 @@ const validateCreateRoute = [
     .bail()
     .matches(ROUTE_CODE_REGEX)
     .withMessage(
-      "route_code must be 3 digits followed by an uppercase letter (e.g. 101A)"
+      "route_code must be 3 digits followed by an uppercase letter (e.g. 101, 101A)"
     ),
   body("origin")
     .exists()

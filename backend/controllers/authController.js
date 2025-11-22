@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 const pool = require("../db/index");
-const { findUserByEmailOrPhone } = require("../service/userService");
+const { findUserByEmailOrPhone } = require("../services/userService");
 const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
 
@@ -29,7 +29,7 @@ exports.register = async (req, res) => {
       full_phone,
       password,
       date_of_birth,
-      gender
+      gender,
     } = req.body;
 
     // Check if user already exists
@@ -52,7 +52,7 @@ exports.register = async (req, res) => {
       full_phone,
       password_hash: hashedPassword,
       date_of_birth,
-      gender
+      gender,
     };
 
     await pool.query(
@@ -68,14 +68,12 @@ exports.register = async (req, res) => {
         newUser.full_phone,
         newUser.password_hash,
         newUser.date_of_birth,
-        newUser.gender
+        newUser.gender,
       ]
     );
 
     // Return success response
-    return res
-      .status(201)
-      .json(success(null, "User registered successfully"));
+    return res.status(201).json(success(null, "User registered successfully"));
   } catch (err) {
     console.error("Registration error:", err);
     return res.status(500).json({
