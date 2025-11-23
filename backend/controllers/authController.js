@@ -1,4 +1,4 @@
-const { generateToken } = require("../utils/jwt");
+const { generateTokens } = require("../utils/jwt");
 const { success, failure } = require("../utils/response");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
@@ -136,16 +136,14 @@ exports.login = async (req, res) => {
 
     // Generate token
     logger.info("[LOGIN] Authentication success, generating access token");
-    const token = generateToken({
+    const tokens = generateTokens({
       sub: existingUser.id,
       email: existingUser.email,
     });
 
     // Return success response
     logger.info(`[LOGIN] Login request successful for user ${existingUser.id}`);
-    return res
-      .status(OK)
-      .json(success({ access_token: token }, "User logged in successfully"));
+    return res.status(OK).json(success(tokens, "User logged in successfully"));
   } catch (error) {
     logger.error("[LOGIN] Login Error:", error);
     return res

@@ -23,6 +23,13 @@ function authMiddleware(req, res, next) {
 
   try {
     const payload = verifyToken(token);
+
+    if (payload.type !== "access") {
+      const err = new Error("Invalid token type");
+      err.name = "JsonWebTokenError";
+      throw err;
+    }
+
     req.user = payload;
     logger.info(`[AUTH] token is valid, user ${req.user.sub} authenticated`);
     next();
@@ -38,7 +45,9 @@ function authMiddleware(req, res, next) {
       logger.warn("[AUTH] Token is invalid");
       return res
         .status(401)
-        .json(failure("INVALID_TOKEN", "Invalid token", 401));
+        .json(
+          failure("INVALID_TOKEN", `${error.message}` || "Invalid token", 401)
+        );
     }
 
     logger.error("[AUTH] Error verifying token:", error);

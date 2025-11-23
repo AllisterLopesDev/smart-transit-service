@@ -28,9 +28,12 @@ Create a .env file in the backend root and add the following (adjust values as n
 PORT=5000
 DB_HOST=localhost
 DB_USER=myuser
-DB_PASS=mypassword
+DB_PASSWORD=mypassword
+DB_NAME=database-name
+DB_PORT=5432
 JWT_SECRET=256 or 128 secret string
-JWT_EXPIRES_IN=3600s
+JWT_ACCESS_EXPIRES_IN=3600s
+JWT_REFRESH_EXPIRES_IN=7d
 LOG_LEVEL=info
 
 ⚠️ Don’t forget: .env is in .gitignore so it won’t be pushed to GitHub.
