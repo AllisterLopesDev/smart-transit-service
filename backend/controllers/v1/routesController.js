@@ -2,6 +2,14 @@ const { success, failure } = require("../../utils/response");
 const routesService = require("../../services/routesService");
 const logger = require("../../utils/logger");
 const stopsService = require("../../services/stopsService");
+const {
+  OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  CONFLICT,
+  INTERNAL_SERVER_ERROR,
+} = require("../../constants/httpStatusCodes");
 
 exports.getAllRoutes = async (req, res) => {
   try {
@@ -11,7 +19,7 @@ exports.getAllRoutes = async (req, res) => {
     // log error using project's logger if available; fall back to console
     logger.error("[Routes Controller] getAllRoutes error", err);
     return res
-      .status(500)
+      .status(INTERNAL_SERVER_ERROR)
       .json(failure("internal_error", "Failed to fetch routes"));
   }
 };
@@ -19,45 +27,54 @@ exports.getAllRoutes = async (req, res) => {
 exports.getRouteById = async (req, res) => {
   const { id } = req.params;
   try {
-    const route = await routesService.getRouteById(id);
+    const route = await routesService.getById(id);
     if (!route)
       return res
-        .status(404)
-        .json(failure("not_found", `Route ${id} not found`, 404));
+        .status(NOT_FOUND)
+        .json(failure("not_found", `Route ${id} not found`, NOT_FOUND));
     return res.json(
       success(route, `Fetched route with ID: ${id} successfully`)
     );
   } catch (err) {
     logger.error("[Routes Controller] getRouteById error", err);
     return res
-      .status(500)
+      .status(INTERNAL_SERVER_ERROR)
       .json(failure("internal_error", "Failed to fetch route"));
   }
 };
 
 exports.createRoute = async (req, res) => {
-  const payload = req.body || {};
-  const { route_code, origin, destination, distance_km } = payload;
-  logger.info(`[ROUTES] create route requested by ${req.user.sub}`);
   const createdBy = req.user.sub;
+  logger.info(`[ROUTES] create route requested by ${createdBy}`);
+
+  const payload = req.body || {};
+  const { route_code, origin, destination } = payload;
 
   const existingRoute = await routesService.getRouteByRouteCode(route_code);
   if (existingRoute) {
-    logger.error(`[ROUTES] route already exists by route_code ${route_code}`);
+    logger.error(`[ROUTES] Route with code ${route_code} already exists`);
     return res
-      .status(409)
-      .json(failure("conflict", "Route with this code already exists", 409));
+      .status(CONFLICT)
+      .json(
+        failure(
+          "conflict",
+          `Route with code ${route_code} already exists`,
+          CONFLICT
+        )
+      );
   }
 
-  logger.info(`[ROUTES] checking if origin and destination exists as stops`);
+  logger.info(`[ROUTES] checking if origin and destination stops exist`);
   const originStop = await stopsService.getById(origin);
   const destinationStop = await stopsService.getById(destination);
 
   if (!originStop) {
     logger.error(`[ROUTES] origin stop does not exist with ID ${origin}`);
     return res
-      .status(400)
-      .json(failure("invalid_origin", "Origin stop does not exist", 400));
+      .status(BAD_REQUEST)
+      .json(
+        failure("invalid_origin", "Origin stop does not exist", BAD_REQUEST)
+      );
   }
 
   if (!destinationStop) {
@@ -65,25 +82,29 @@ exports.createRoute = async (req, res) => {
       `[ROUTES] destination stop does not exist with ID ${destination}`
     );
     return res
-      .status(400)
+      .status(BAD_REQUEST)
       .json(
-        failure("invalid_destination", "Destination stop does not exist", 400)
+        failure(
+          "invalid_destination",
+          "Destination stop does not exist",
+          BAD_REQUEST
+        )
       );
   }
 
   try {
     const created = await routesService.createRoute(payload, createdBy);
-    return res.status(201).json(success(created, "Route created"));
+    return res.status(CREATED).json(success(created, "Route created"));
   } catch (err) {
-    logger.error("[ROUTES] createRoute error", err);
-    // handle unique violation for route_code (Postgres err code 23505)
-    if (err && err.code === "23505") {
-      return res
-        .status(409)
-        .json(failure("conflict", "Route with this code already exists", 409));
-    }
+    logger.error("[ROUTES] error while persisting route", err);
     return res
-      .status(500)
-      .json(failure("internal_error", "Failed to create route"));
+      .status(INTERNAL_SERVER_ERROR)
+      .json(
+        failure(
+          "internal_error",
+          "Failed to create route",
+          INTERNAL_SERVER_ERROR
+        )
+      );
   }
 };

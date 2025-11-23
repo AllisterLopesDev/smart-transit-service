@@ -16,7 +16,7 @@ async function getAllRoutes() {
   return res.rows;
 }
 
-async function getRouteById(id) {
+async function getById(id) {
   const sql = `SELECT ${BASE_COLUMNS} FROM routes WHERE id = $1 AND deleted_at IS NULL`;
   const res = await db.query(sql, [id]);
   return res.rows[0] || null;
@@ -28,8 +28,8 @@ async function createRoute(payload, created_by) {
     route_code,
     origin,
     destination,
-    distance_km = null,
-    estimated_duration_minutes = null,
+    distance_km,
+    estimated_duration_minutes,
     is_active = true,
   } = payload;
 
@@ -60,7 +60,7 @@ async function getRouteByRouteCode(route_code) {
 
 module.exports = {
   getAllRoutes,
-  getRouteById,
+  getById,
   createRoute,
   getRouteByRouteCode,
 };
