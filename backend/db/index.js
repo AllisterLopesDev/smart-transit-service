@@ -1,5 +1,5 @@
-const { Pool } = require("pg");
-require("dotenv").config();
+const { Pool } = require('pg');
+require('dotenv').config();
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -10,17 +10,17 @@ const pool = new Pool({
 });
 
 async function query(text, params) {
-const start = Date.now();
-try {
-const res = await pool.query(text, params);
-const duration = Date.now() - start;
-// keep logging minimal here; project likely has a logger util
-// console.log('executed query', { text, duration, rows: res.rowCount });
-return res;
-} catch (err) {
-// rethrow for service/controller to handle
-throw err;
-}
+  const start = Date.now();
+  try {
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    // keep logging minimal here; project likely has a logger util
+    // console.log('executed query', { text, duration, rows: res.rowCount });
+    return res;
+  } catch (err) {
+    // rethrow for service/controller to handle
+    throw err;
+  }
 }
 
-module.exports = pool;
+module.exports = { query, pool };

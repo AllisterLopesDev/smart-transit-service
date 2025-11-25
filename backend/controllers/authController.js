@@ -1,11 +1,18 @@
-const { generateToken } = require("../utils/jwt");
-const { success } = require("../utils/response");
+const { generateTokens } = require("../utils/jwt");
+const { success, failure } = require("../utils/response");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 const pool = require("../db/index");
-const { findUserByEmailOrPhone } = require("../service/userService");
+const usersService = require("../services/userService");
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+  OK,
+} = require("../constants/httpStatusCodes");
 
 // Register Controller
 exports.register = async (req, res) => {
@@ -13,11 +20,10 @@ exports.register = async (req, res) => {
     // Validate input fields
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: "error",
-        message: "Validation failed",
-        errors: errors.array(),
-      });
+      logger.warn("[REGISTER] Validation failed");
+      return res
+        .status(BAD_REQUEST)
+        .json(failure("bad_request", errors.array(), BAD_REQUEST));
     }
 
     const {
@@ -28,11 +34,14 @@ exports.register = async (req, res) => {
       full_phone,
       password,
       date_of_birth,
-      gender
+      gender,
     } = req.body;
 
     // Check if user already exists
-    const existingUser = await findUserByEmailOrPhone(email, full_phone);
+    const existingUser = await usersService.findUserByEmailOrPhone(
+      email,
+      full_phone
+    );
     if (existingUser) {
       return res
         .status(400)
@@ -51,7 +60,7 @@ exports.register = async (req, res) => {
       full_phone,
       password_hash: hashedPassword,
       date_of_birth,
-      gender
+      gender,
     };
 
     await pool.query(
@@ -67,14 +76,12 @@ exports.register = async (req, res) => {
         newUser.full_phone,
         newUser.password_hash,
         newUser.date_of_birth,
-        newUser.gender
+        newUser.gender,
       ]
     );
-    
+
     // Return success response
-    return res
-      .status(201)
-      .json(success(null, "User registered successfully"));
+    return res.status(201).json(success(null, "User registered successfully"));
   } catch (err) {
     console.error("Registration error:", err);
     return res.status(500).json({
@@ -85,55 +92,68 @@ exports.register = async (req, res) => {
   }
 };
 
-
 // Login Controller
 exports.login = async (req, res) => {
   try {
     // Validate input fields
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: "error",
-        message: "Validation failed",
-        errors: errors.array(),
-      });
+      logger.warn("[LOGIN] Validation failed");
+      return res
+        .status(BAD_REQUEST)
+        .json(failure("bad_request", errors.array(), BAD_REQUEST));
     }
-    const { email, password } = req.body;
-    // Check if user exists
-    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-    if (userResult.rows.length === 0) {
-      return res.status(400).json({ status: "error", message: "Invalid credentials" });
-    }
-    const user = userResult.rows[0];
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const { email, password } = req.body;
+
+    const existingUser = await usersService.findByEmail(email);
+
+    if (!existingUser) {
+      logger.error(`[LOGIN] user ${email} does not exist`);
+      return res
+        .status(NOT_FOUND)
+        .json(failure("not_found", `user ${email} not found`, NOT_FOUND));
+    }
+
+    if (existingUser.status === "inactive") {
+      logger.warn(`[LOGIN] user ${email} is inactive`);
+      return res
+        .status(BAD_REQUEST)
+        .json(
+          failure("inactive_user", "User account is inactive", BAD_REQUEST)
+        );
+    }
+
+    logger.info("[LOGIN] authenticating users credentials");
+    const isMatch = await bcrypt.compare(password, existingUser.password_hash);
     if (!isMatch) {
-      return res.status(400).json({ status: "error", message: "Invalid credentials" });
+      return res
+        .status(BAD_REQUEST)
+        .json(
+          failure("invalid_credentials", "invalid credentials", BAD_REQUEST)
+        );
     }
 
     // Generate token
-    const token = generateToken({
-        id: user.id,
-        email: user.email,
+    logger.info("[LOGIN] Authentication success, generating access token");
+    const tokens = generateTokens({
+      sub: existingUser.id,
+      email: existingUser.email,
     });
 
     // Return success response
+    logger.info(`[LOGIN] Login request successful for user ${existingUser.id}`);
+    return res.status(OK).json(success(tokens, "User logged in successfully"));
+  } catch (error) {
+    logger.error("[LOGIN] Login Error:", error);
     return res
-      .status(200)
-      .json(success({ access_token: token }, "User logged in successfully"));
+      .status(INTERNAL_SERVER_ERROR)
+      .json(
+        failure(
+          "internal_server_error",
+          "Internal server error",
+          INTERNAL_SERVER_ERROR
+        )
+      );
   }
-    catch (error) {
-    console.error("Login Error:", error);
-    return res.status(500).json({
-      status: "error",
-      message: "Server error during login",
-    });
-  }
-
-  //login timestamp update 
-  await pool.query(
-    "UPDATE users SET last_login = NOW() WHERE id = $1",
-    [user.id]
-  );
 };
