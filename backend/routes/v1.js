@@ -9,4 +9,7 @@ router.use(authMiddleware);
 const routesResource = require("./v1/routes");
 router.use("/routes", routesResource);
 
+const stopsResource = require("./v1/stops");
+router.use("/stops", stopsResource);
+
 module.exports = router;

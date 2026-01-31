@@ -16,4 +16,10 @@ async function getById(id) {
   return res.rows[0] || null;
 }
 
-module.exports = { getById };
+async function getAllStops() {
+  const sql = `SELECT ${BASE_COLUMNS} FROM stops WHERE deleted_at IS NULL ORDER BY created_at DESC`;
+  const res = await db.query(sql);
+  return res.rows;
+}
+
+module.exports = { getById, getAllStops };
