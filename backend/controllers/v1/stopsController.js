@@ -12,8 +12,25 @@ const {
 
 exports.getAllStops = async (req, res) => {
   try {
-    const { page, limit } = req.query;
-    const result = await stopsService.getAllStops(page, limit);
+    const { page, limit, code, name, is_active, facilities, created_by } =
+      req.query;
+
+    // Collect filters (only include provided keys)
+    const filters = {
+      code,
+      name,
+      is_active,
+      facilities,
+      created_by,
+    };
+
+    // Log input filters for debugging (stringify because logger uses printf message)
+    logger.info(
+      `[Stops Controller] getAllStops - request filters ${JSON.stringify(
+        filters
+      )}`
+    );
+    const result = await stopsService.getAllStops(page, limit, filters);
 
     return res.json(success(result, "Fetched all stops successfully"));
   } catch (err) {
