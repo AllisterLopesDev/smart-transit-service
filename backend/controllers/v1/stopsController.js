@@ -12,8 +12,10 @@ const {
 
 exports.getAllStops = async (req, res) => {
   try {
-    const stops = await stopsService.getAllStops();
-    return res.json(success(stops, "Fetched all stops successfully"));
+    const { page, limit } = req.query;
+    const result = await stopsService.getAllStops(page, limit);
+
+    return res.json(success(result, "Fetched all stops successfully"));
   } catch (err) {
     // log error using project's logger if available; fall back to console
     logger.error("[Stops Controller] getAllStops error", err);
