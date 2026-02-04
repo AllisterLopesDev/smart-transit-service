@@ -13,8 +13,28 @@ const {
 
 exports.getAllRoutes = async (req, res) => {
   try {
-    const routes = await routesService.getAllRoutes();
-    return res.json(success(routes, "Fetched all routes successfully"));
+    //pagination and filters can be handled here
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    const filters = {
+      page,
+      limit,
+      origin: req.query.origin,
+      destination: req.query.destination,
+      is_active: req.query.is_active,
+    };
+
+    const routes = await routesService.getAllRoutesFilters(filters);
+    return res.json(success(
+      {
+      page,
+      limit,
+      total: routes.length,
+      routes,
+    },
+      "Fetched routes with pagination and filtering successfully"));
+      
   } catch (err) {
     // log error using project's logger if available; fall back to console
     logger.error("[Routes Controller] getAllRoutes error", err);

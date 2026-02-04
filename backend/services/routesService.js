@@ -58,9 +58,49 @@ async function getRouteByRouteCode(route_code) {
   return res.rows[0] || null;
 }
 
+
+async function getAllRoutesFilters(params) {
+  const {page, limit, origin, destination, is_active} = params;
+
+  const offset = (page - 1) * limit;
+
+  let conditions = [];
+  let values = [];
+  let idx = 1;
+
+  if (source) {
+    conditions.push(`origin ILIKE $${idx++}`);
+    values.push(source);
+  }
+
+  if (destination) {
+    conditions.push(`destination ILIKE $${idx++}`);
+    values.push(destination);
+  }
+
+  if (is_active !== undefined) {
+    conditions.push(`is_active = $${idx++}`);
+    values.push(is_active);
+  }
+
+  let whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")} AND deleted_at IS NULL` : `WHERE deleted_at IS NULL`;
+
+  const query = `
+    SELECT * FROM routes
+    ${whereClause}
+    ORDER BY created_at DESC
+    LIMIT $${idx++} OFFSET $${idx}
+  `;
+
+  const res = await db.query(query, [...values, limit, offset]);
+  return res.rows;
+}
+
+
 module.exports = {
   getAllRoutes,
   getById,
   createRoute,
   getRouteByRouteCode,
+  getAllRoutesFilters,
 };
